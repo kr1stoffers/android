@@ -4,8 +4,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.io.Serializable
 
-data class TV(val name: String, val time:String, val channel: String, val fio:String, var picture: Int = R.drawable.no_picture )
+data class TV(val name: String, val time:String, val channel: String, val fio:String, var picture: Int = R.drawable.no_picture ):Serializable
 class ItemViewModel : ViewModel() {
     private var TVList = mutableStateListOf(
         TV("Akame ga Kill", "14.30","Ani", "Takahiro", R.drawable.akame),
