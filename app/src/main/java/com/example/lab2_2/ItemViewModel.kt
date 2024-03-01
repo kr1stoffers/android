@@ -6,18 +6,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.io.Serializable
 
-data class TV(val name: String, val time:String, val channel: String, val fio:String, var picture: Int = R.drawable.no_picture ):Serializable
+data class TV(val name: String, val time:String, val channel: String, val fio:String, var picture: String = R.drawable.no_picture.toString() ):Serializable
 class ItemViewModel : ViewModel() {
     private var TVList = mutableStateListOf(
-        TV("Akame ga Kill", "14.30","Ani", "Takahiro", R.drawable.akame),
-        TV("One Piece", "8.30","Jump", "Eiichiro Oda", R.drawable.one_piece),
-        TV("JoJo", "9.20","Netflix", "Hirohiko Araki", R.drawable.jojo),
-        TV("Majo no Takkyuubin", "10.00","Ghibli", "Hayao Miyazaki", R.drawable.kiki),
-        TV("Howl no Ugoku Shiro", "11.00","Ghibli", "Hayao Miyazaki", R.drawable.howl),
-        TV("Shingeki no Kyojin", "12.45", "Bessatsu", "Hajime Isayama", R.drawable.titans),
-        TV("ReZero", "13.10", "White Fox", "Tappei Nagatsuki", R.drawable.rezero),
-        TV("Sen to Chihiro no Kamikakushi", "13.50", "Ghibli", "Hayao Miyazaki", R.drawable.ghost),
-        TV("Dororo", "18.00", "Shounen Sunday", "Osamu Tezuka", R.drawable.dororo)
+        TV("Akame ga Kill", "14.30","Ani", "Takahiro", R.drawable.akame.toString()),
+        TV("One Piece", "8.30","Jump", "Eiichiro Oda", R.drawable.one_piece.toString()),
+        TV("JoJo", "9.20","Netflix", "Hirohiko Araki", R.drawable.jojo.toString()),
+        TV("Majo no Takkyuubin", "10.00","Ghibli", "Hayao Miyazaki", R.drawable.kiki.toString()),
+        TV("Howl no Ugoku Shiro", "11.00","Ghibli", "Hayao Miyazaki", R.drawable.howl.toString()),
+        TV("Shingeki no Kyojin", "12.45", "Bessatsu", "Hajime Isayama", R.drawable.titans.toString()),
+        TV("ReZero", "13.10", "White Fox", "Tappei Nagatsuki", R.drawable.rezero.toString()),
+        TV("Sen to Chihiro no Kamikakushi", "13.50", "Ghibli", "Hayao Miyazaki", R.drawable.ghost.toString()),
+        TV("Dororo", "18.00", "Shounen Sunday", "Osamu Tezuka", R.drawable.dororo.toString())
     )
     private val _TVListFlow = MutableStateFlow(TVList)
     val TVListFlow: StateFlow<List<TV>> get() = _TVListFlow
@@ -28,7 +28,7 @@ class ItemViewModel : ViewModel() {
         TVList.add(0, tv)
     }
     fun addTVToEnd(tv: TV) {
-        TVList.add( tv)
+        TVList.add(tv)
     }
     fun isContains(tv: TV): Boolean {
         return TVList.contains(tv)
@@ -36,5 +36,8 @@ class ItemViewModel : ViewModel() {
     fun removeItem(item: TV) {
         val index = TVList.indexOf(item)
         TVList.remove(TVList[index])
+    }
+    fun changeImage(index: Int, value: String){
+        TVList[index] = TVList[index].copy(picture = value)
     }
 }

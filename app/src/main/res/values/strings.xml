@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">lab2_2</string>
-    <string name="About">Kr1stoffers aka Nazmiev V.D.</string>
+    <string name="About">Kr1stoffers ❄️ aka Nazmiev V.D.</string>
     <string name="AkamegaKill">
         Прославиться в столице — это мечта любого деревенского парня.
         Главный герой, Тацуми, не стал исключением. Решив, что хочет спасти свою деревню,
@@ -58,5 +58,4 @@
         тела
         своего новорождённого сына. Обречённый на гибель мальчик, тем не менее, выживает благодаря помощи доктора
     </string>
-    <string name="title_activity_make_input_part">MakeInputPart</string>
 </resources>

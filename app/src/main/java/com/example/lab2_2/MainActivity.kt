@@ -1,10 +1,13 @@
 package com.example.lab2_2
 
 import android.app.Activity
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Bundle
+import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -25,19 +28,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.lab2_2.ui.theme.Lab2_2Theme
 import kotlinx.coroutines.launch
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
 
 class MainActivity : ComponentActivity() {
     private val viewModel = ItemViewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
+        println("😔😔😔😔😔😔😔😔😔")
         super.onCreate(savedInstanceState)
+        if (savedInstanceState != null && savedInstanceState.containsKey("TVs")){
+            val tempTVArray = savedInstanceState.getSerializable("TVs") as ArrayList<TV>
+            viewModel.clearList()
+            tempTVArray.forEach {
+                viewModel.addTVToEnd(it)
+            }
+        }
         setContent {
             val lazyListState = rememberLazyListState()
             Lab2_2Theme  {
@@ -67,6 +84,7 @@ class MainActivity : ComponentActivity() {
         val startForResult =
             rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                     result ->
+                println("⚔️⚔️⚔️⚔️⚔️⚔️⚔️")
                 if (result.resultCode == Activity.RESULT_OK) {
                     val newTV = result.data?.getSerializableExtra("newItem") as TV
                     if (!model.isContains(newTV)) {
@@ -113,18 +131,19 @@ class MainActivity : ComponentActivity() {
     }
     @Composable
     fun MakeList(viewModel: ItemViewModel, lazyListState: LazyListState) {
+        val TVListState = viewModel.TVListFlow.collectAsState()
         LazyColumn(
     //        verticalArrangement = Arrangement.spacedBy(5.dp),
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White),
+                .fillMaxSize(),
+//                .background(Color.White),
             state = lazyListState
         ) {
             items(
                 items = viewModel.TVListFlow.value,
                 key = { tv -> tv.name },
                 itemContent = { item ->
-                    ListColumn(item)
+                    ListColumn(item, TVListState, viewModel)
                 }
             )
         }
@@ -150,14 +169,24 @@ class MainActivity : ComponentActivity() {
 
         )
     }
-    @OptIn(ExperimentalFoundationApi::class)
+    @OptIn(ExperimentalFoundationApi::class, ExperimentalCoilApi::class)
     @Composable
-    fun ListColumn(item: TV){
+    fun ListColumn(item: TV, TVListState:  State<List<TV>>, viewModel: ItemViewModel){
         val context = LocalContext.current
         val openDialog = remember { mutableStateOf(false)}
-        val langSelected = remember { mutableStateOf("") }
+        val TVSelected = remember { mutableStateOf("") }
         if (openDialog.value)
-            MakeAlertDialog(context, langSelected.value, openDialog)
+            MakeAlertDialog(context, TVSelected.value, openDialog)
+        var mDisplayMenu by remember{mutableStateOf(false)}
+        val launcher =
+            rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()){ res ->
+                if (res.data?.data != null){
+                    val imgURI = res.data?.data
+//                    Toast.makeText(this@MainActivity, imgURI.toString(), Toast.LENGTH_LONG).show()
+                    val index = TVListState.value.indexOf(item)
+                    viewModel.changeImage(index, imgURI.toString())
+                }
+            }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
     //        verticalArrangement = Arrangement.SpaceEvenly,
@@ -169,10 +198,11 @@ class MainActivity : ComponentActivity() {
                 .combinedClickable (
                     onClick = {
                         println("item = ${item.name}")
-                        langSelected.value = item.name
+                        TVSelected.value = item.name
     //                    Toast.makeText(context, "item = ${item.name}", Toast.LENGTH_LONG).show()
                         openDialog.value = true
-                    }
+                    },
+                    onLongClick = { mDisplayMenu = true}
                 )
         ) {
             Text(
@@ -187,11 +217,12 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxWidth()
             ){
                 Image(
-                    painter = painterResource(id = item.picture),
+                    painter = if(pictureIsInt(item.picture)) painterResource(item.picture.toInt())
+                              else rememberImagePainter(item.picture),
+//                        painterResource(id = item.picture),
                     contentDescription = "",
-    //            contentScale = ContentScale.FillWidth,
-                    modifier = Modifier.padding(bottom = 10.dp).clip(RoundedCornerShape(25.dp)).width(150.dp)
-
+                contentScale = ContentScale.FillHeight,
+                    modifier = Modifier.padding(bottom = 10.dp).clip(RoundedCornerShape(25.dp)).width(150.dp).height(210.dp)
                 )
                 Column (
                     horizontalAlignment = Alignment.Start,
@@ -199,6 +230,38 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.width(80.dp),
 
                 ){
+                DropdownMenu(
+                    expanded = mDisplayMenu,
+                    onDismissRequest = {mDisplayMenu = false},
+
+                ){
+                    DropdownMenuItem(
+                        text = { Text(text = "Change image", fontSize = 12.sp)},
+                        onClick = {
+                            mDisplayMenu = !mDisplayMenu
+                            val permission: String = Manifest.permission.READ_EXTERNAL_STORAGE
+                            val grant = ContextCompat.checkSelfPermission(context, permission)
+//                            Toast.makeText(context, grant.toString(), Toast.LENGTH_LONG).show()
+                            if (grant != PackageManager.PERMISSION_GRANTED) {
+                                val permission_list = arrayOfNulls<String>(1)
+                                permission_list[0] = permission
+                                ActivityCompat.requestPermissions(context as Activity, permission_list,1)
+                            }
+                            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT,
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+                                addCategory(Intent.CATEGORY_OPENABLE) }
+                            launcher.launch(intent)
+                        },
+                    )
+                    DropdownMenuItem(
+                        text = { Text(text = "Remove", fontSize = 12.sp, color = MaterialTheme.colorScheme.error)},
+                        onClick = {
+                            mDisplayMenu = !mDisplayMenu
+                            viewModel.removeItem(item)
+                        },
+                        modifier = Modifier.background(color = MaterialTheme.colorScheme.errorContainer)
+                    )
+                }
                     Text(
                         text = "Show time:",
                         fontSize = 10.sp,
@@ -235,5 +298,24 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+    fun pictureIsInt(picture: String): Boolean{
+        var data = try {
+            picture.toInt()
+        } catch (e:NumberFormatException){
+            null
+        }
+        return data!=null
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+
+//        Toast.makeText(this, "saved", Toast.LENGTH_SHORT).show()
+        var tempTVArray = ArrayList<TV>()
+        viewModel.TVListFlow.value.forEach {
+            tempTVArray.add(it)
+        }
+        outState.putSerializable("TVs", tempTVArray)
+        super.onSaveInstanceState(outState)
     }
 }
