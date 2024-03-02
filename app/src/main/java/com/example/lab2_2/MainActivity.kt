@@ -46,14 +46,37 @@ import coil.compose.rememberImagePainter
 class MainActivity : ComponentActivity() {
     private val viewModel = ItemViewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
-        println("😔😔😔😔😔😔😔😔😔")
         super.onCreate(savedInstanceState)
+//        this.deleteDatabase("TVs.db")
+        val dbHelper = TVDbHelper(this)
         if (savedInstanceState != null && savedInstanceState.containsKey("TVs")){
             val tempTVArray = savedInstanceState.getSerializable("TVs") as ArrayList<TV>
             viewModel.clearList()
             tempTVArray.forEach {
                 viewModel.addTVToEnd(it)
             }
+        }else{
+            if (dbHelper!!.isEmpty()){
+                println("DB is empty")
+
+                var tempTVArray = ArrayList<TV>()
+                viewModel.TVListFlow.value.forEach{
+                    tempTVArray.add(it)
+                }
+                println(tempTVArray)
+                dbHelper!!.addArrayToDB(tempTVArray)
+                dbHelper!!.printDB()
+            }else{
+                println("DB has rec")
+                dbHelper!!.printDB()
+
+                val tempTVArray = dbHelper!!.getTVArray()
+                viewModel.clearList()
+                tempTVArray.forEach {
+                    viewModel.addTVToEnd(it)
+                }
+            }
+
         }
         setContent {
             val lazyListState = rememberLazyListState()
@@ -65,8 +88,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Column(Modifier.fillMaxSize()) {
 //                        MakeInputPart(viewModel, lazyListState)
-                        MakeAppBar(viewModel, lazyListState)
-                        MakeList(viewModel, lazyListState)
+                        MakeAppBar(viewModel, lazyListState, dbHelper!!)
+                        MakeList(viewModel, lazyListState, dbHelper!!)
                     }
                 }
             }
@@ -75,7 +98,7 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun MakeAppBar(model: ItemViewModel, lazyListState: LazyListState) {
+    fun MakeAppBar(model: ItemViewModel, lazyListState: LazyListState, dbHelper: TVDbHelper) {
 
         var mDisplayMenu by remember { mutableStateOf(false) }
         val mContext = LocalContext.current
@@ -84,11 +107,11 @@ class MainActivity : ComponentActivity() {
         val startForResult =
             rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                     result ->
-                println("⚔️⚔️⚔️⚔️⚔️⚔️⚔️")
                 if (result.resultCode == Activity.RESULT_OK) {
                     val newTV = result.data?.getSerializableExtra("newItem") as TV
                     if (!model.isContains(newTV)) {
                         model.addTVToHead(newTV)
+                        dbHelper.addTV(newTV)
                         scope.launch {
                             lazyListState.scrollToItem(0)
                         }
@@ -130,7 +153,7 @@ class MainActivity : ComponentActivity() {
         )
     }
     @Composable
-    fun MakeList(viewModel: ItemViewModel, lazyListState: LazyListState) {
+    fun MakeList(viewModel: ItemViewModel, lazyListState: LazyListState, dbHelper: TVDbHelper) {
         val TVListState = viewModel.TVListFlow.collectAsState()
         LazyColumn(
     //        verticalArrangement = Arrangement.spacedBy(5.dp),
@@ -143,7 +166,7 @@ class MainActivity : ComponentActivity() {
                 items = viewModel.TVListFlow.value,
                 key = { tv -> tv.name },
                 itemContent = { item ->
-                    ListColumn(item, TVListState, viewModel)
+                    ListColumn(item, TVListState, viewModel, dbHelper)
                 }
             )
         }
@@ -171,7 +194,7 @@ class MainActivity : ComponentActivity() {
     }
     @OptIn(ExperimentalFoundationApi::class, ExperimentalCoilApi::class)
     @Composable
-    fun ListColumn(item: TV, TVListState:  State<List<TV>>, viewModel: ItemViewModel){
+    fun ListColumn(item: TV, TVListState:  State<List<TV>>, viewModel: ItemViewModel, dbHelper: TVDbHelper){
         val context = LocalContext.current
         val openDialog = remember { mutableStateOf(false)}
         val TVSelected = remember { mutableStateOf("") }
@@ -182,9 +205,9 @@ class MainActivity : ComponentActivity() {
             rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()){ res ->
                 if (res.data?.data != null){
                     val imgURI = res.data?.data
-//                    Toast.makeText(this@MainActivity, imgURI.toString(), Toast.LENGTH_LONG).show()
                     val index = TVListState.value.indexOf(item)
                     viewModel.changeImage(index, imgURI.toString())
+                    dbHelper!!.changeImgForTV(item.name, imgURI.toString())
                 }
             }
         Column(
@@ -258,6 +281,7 @@ class MainActivity : ComponentActivity() {
                         onClick = {
                             mDisplayMenu = !mDisplayMenu
                             viewModel.removeItem(item)
+                            dbHelper.removeTV(item.name)
                         },
                         modifier = Modifier.background(color = MaterialTheme.colorScheme.errorContainer)
                     )
