@@ -21,7 +21,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -49,6 +52,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 //        this.deleteDatabase("TVs.db")
         val dbHelper = TVDbHelper(this)
+//        println(this.filesDir)
         if (savedInstanceState != null && savedInstanceState.containsKey("TVs")){
             val tempTVArray = savedInstanceState.getSerializable("TVs") as ArrayList<TV>
             viewModel.clearList()
@@ -89,7 +93,7 @@ class MainActivity : ComponentActivity() {
                     Column(Modifier.fillMaxSize()) {
 //                        MakeInputPart(viewModel, lazyListState)
                         MakeAppBar(viewModel, lazyListState, dbHelper!!)
-                        MakeList(viewModel, lazyListState, dbHelper!!)
+//                        MakeList(viewModel, lazyListState, dbHelper!!)
                     }
                 }
             }
@@ -122,6 +126,7 @@ class MainActivity : ComponentActivity() {
             }
         if (openDialog.value)
             MakeAlertDialog(context = mContext, dialogTitle = "About", openDialog = openDialog)
+        val drawerStateObj = rememberDrawerState(initialValue = DrawerValue.Closed)
         TopAppBar(
             title = { Text("TV Shows") },
             actions = {
@@ -149,9 +154,70 @@ class MainActivity : ComponentActivity() {
                     )
 
                 }
+            },
+            navigationIcon = {
+                IconButton(
+                    onClick = {
+                        scope.launch {
+                            if (drawerStateObj.isClosed) drawerStateObj.open()
+                            else drawerStateObj.close()
+                        }
+                    }
+                ){
+                    Icon(
+                        Icons.Rounded.Menu,
+                        contentDescription = ""
+                    )
+                }
+            }
+        )
+        ModalNavigationDrawer(
+            drawerState = drawerStateObj,
+            drawerContent = {
+                ModalDrawerSheet {
+                    Spacer(Modifier.height(12.dp))
+                    NavigationDrawerItem(
+                        icon = {Icon(Icons.Default.Star, contentDescription = null)},
+                        label = { Text("Drawing")},
+                        selected = false,
+                        onClick = {
+                            scope.launch { drawerStateObj.close() }
+                            val newAct = Intent(mContext, DrawingActivity::class.java)
+                            mContext.startActivity(newAct)
+                        },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                    NavigationDrawerItem(
+                        icon = {Icon(Icons.Default.Home, contentDescription = null)},
+                        label = { Text("Reset TV Show")},
+                        selected = false,
+                        onClick = {
+//                            viewModel.
+                            model.homeTV()
+                            val temp = ArrayList<TV>()
+                            model.TVListFlow.value.forEach {
+                                temp.add(it)
+                            }
+                            dbHelper!!.del()
+                            dbHelper!!.addArrayToDB(temp)
+                        },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                }
+            },
+            content = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+//                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    MakeList(viewModel = model, lazyListState, dbHelper)
+                }
             }
         )
     }
+
     @Composable
     fun MakeList(viewModel: ItemViewModel, lazyListState: LazyListState, dbHelper: TVDbHelper) {
         val TVListState = viewModel.TVListFlow.collectAsState()
@@ -207,6 +273,7 @@ class MainActivity : ComponentActivity() {
                     val imgURI = res.data?.data
                     val index = TVListState.value.indexOf(item)
                     viewModel.changeImage(index, imgURI.toString())
+                    println("pathhhh" + this.filesDir)
                     dbHelper!!.changeImgForTV(item.name, imgURI.toString())
                 }
             }

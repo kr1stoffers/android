@@ -88,9 +88,11 @@ class TVDbHelper (context: Context) :
         db.close()
     }
 
-//    fun del(){
-//        val db = this.writableDatabase
-//    }
+    fun del(){
+        val db = this.writableDatabase
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME)
+        onCreate(db)
+    }
     fun changeImgForTV(name: String, img: String){
         val db = this.writableDatabase
         val values = ContentValues()

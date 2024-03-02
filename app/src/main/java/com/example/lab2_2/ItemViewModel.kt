@@ -37,6 +37,18 @@ class ItemViewModel : ViewModel() {
         val index = TVList.indexOf(item)
         TVList.remove(TVList[index])
     }
+    fun homeTV(){
+        clearList()
+        TVList.add(TV("Akame ga Kill", "14.30","Ani", "Takahiro", R.drawable.akame.toString()))
+        TVList.add(TV("One Piece", "8.30","Jump", "Eiichiro Oda", R.drawable.one_piece.toString()))
+        TVList.add(TV("JoJo", "9.20","Netflix", "Hirohiko Araki", R.drawable.jojo.toString()))
+        TVList.add(TV("Majo no Takkyuubin", "10.00","Ghibli", "Hayao Miyazaki", R.drawable.kiki.toString()))
+        TVList.add(TV("Howl no Ugoku Shiro", "11.00","Ghibli", "Hayao Miyazaki", R.drawable.howl.toString()))
+        TVList.add(TV("Shingeki no Kyojin", "12.45", "Bessatsu", "Hajime Isayama", R.drawable.titans.toString()))
+        TVList.add(TV("ReZero", "13.10", "White Fox", "Tappei Nagatsuki", R.drawable.rezero.toString()))
+        TVList.add(TV("Sen to Chihiro no Kamikakushi", "13.50", "Ghibli", "Hayao Miyazaki", R.drawable.ghost.toString()))
+        TVList.add(TV("Dororo", "18.00", "Shounen Sunday", "Osamu Tezuka", R.drawable.dororo.toString()))
+    }
     fun changeImage(index: Int, value: String){
         TVList[index] = TVList[index].copy(picture = value)
     }
