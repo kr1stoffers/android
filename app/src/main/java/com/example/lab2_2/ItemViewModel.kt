@@ -52,4 +52,8 @@ class ItemViewModel : ViewModel() {
     fun changeImage(index: Int, value: String){
         TVList[index] = TVList[index].copy(picture = value)
     }
+
+    fun changeInfo(index: Int, tv: TV){
+        TVList[index] = TVList[index].copy(name = tv.name, time = tv.time, channel = tv.channel, fio = tv.fio)
+    }
 }

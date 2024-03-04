@@ -79,7 +79,7 @@ class DrawingActivity : ComponentActivity() {
                             PrimitiveMenuState = !PrimitiveMenuState
                         }
                     ){
-                        Text(text = stringResource(R.string.primative))
+                        Text(text = stringResource(R.string.primitive))
                     }
                     Button(
 //                        modifier = Modifier.fillMaxWidth(),

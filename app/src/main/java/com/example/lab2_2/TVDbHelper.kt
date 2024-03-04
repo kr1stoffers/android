@@ -102,6 +102,20 @@ class TVDbHelper (context: Context) :
         db.update(TABLE_NAME, values, "$NAME_COl = '$name'", null)
         db.close()
     }
+
+    fun changeInfoForTV(oldName: String,  tv: TV){
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(NAME_COl, tv.name)
+        values.put(TIME_COL, tv.time)
+        values.put(CHANNEL_COL, tv.channel)
+        values.put(FIO_COL, tv.fio)
+        println(values)
+
+        db.update(TABLE_NAME, values, "$NAME_COl = '$oldName'", null)
+        db.close()
+    }
+
     fun getTVArray(): ArrayList<TV>{
 
         var TVsArray = ArrayList<TV>()

@@ -58,7 +58,7 @@ class MyGraphView(context: Context?) : View(context) {
         invalidate()
     }
     fun drawFace() {
-        val mBitmapFromSdcard = BitmapFactory.decodeFile("/sdcard/Download/tray_large.png")
+        val mBitmapFromSdcard = BitmapFactory.decodeFile("/storage/self/primary/Pictures/VK/5ACuMEP9wXk.jpg")
         mCanvas!!.drawBitmap(mBitmapFromSdcard, 100f, 100f, mPaint)
         invalidate()
     }

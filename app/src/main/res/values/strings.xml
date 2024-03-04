@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">lab2_2</string>
+    <string name="app_name">Kontrl</string>
     <string name="kr1st">Kr1stoffers ❄️ aka Nazmiev V.D.</string>
     <string name="AkamegaKill" translatable="false">
         Прославиться в столице — это мечта любого деревенского парня.
@@ -66,20 +66,22 @@
     <string name="surname">Surname</string>
     <string name="save">Save</string>
     <string name="upload">Upload</string>
-    <string name="primative">Primative</string>
+    <string name="primitive">Primitive</string>
     <string name="about">About</string>
     <string name="title">TV Shows</string>
-    <string name="addTV">Add TV</string>
+    <string name="addTV">OK</string>
     <string name="drawing">Drawing</string>
     <string name="resetTV">Reset TV Shows</string>
     <string name="black">Magenta</string>
     <string name="green">Green</string>
     <string name="red">Red</string>
-    <string name="time">Color</string>
-    <string name="channel">Color</string>
-    <string name="author">Color</string>
-    <string name="TVtitle">Color</string>
+    <string name="time">Show Time</string>
+    <string name="channel">Channel</string>
+    <string name="author">Author</string>
+    <string name="TVtitle">Title</string>
     <string name="color">Color</string>
-
+    <string name="changeInfo">Change info</string>
+    <string name="changeIMG">Change image</string>
+    <string name="remove">Remove</string>
 
 </resources>

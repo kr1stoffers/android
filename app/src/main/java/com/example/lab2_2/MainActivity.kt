@@ -275,9 +275,20 @@ class MainActivity : ComponentActivity() {
                     val imgURI = res.data?.data
                     val index = TVListState.value.indexOf(item)
                     viewModel.changeImage(index, imgURI.toString())
-                    println("pathhhh" + this.filesDir)
                     dbHelper!!.changeImgForTV(item.name, imgURI.toString())
                 }
+            }
+        val scope = rememberCoroutineScope()
+
+        val changeLauncher =
+            rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val newTV = result.data?.getSerializableExtra("newItem") as TV
+                        viewModel.changeInfo(TVListState.value.indexOf(item), newTV)
+                        dbHelper!!.changeInfoForTV(item.name, newTV)
+                    }else{
+                        Toast.makeText(context, "Отмена 🤨", Toast.LENGTH_LONG).show()
+                    }
             }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -328,7 +339,7 @@ class MainActivity : ComponentActivity() {
 
                 ){
                     DropdownMenuItem(
-                        text = { Text(text = "Change image", fontSize = 12.sp)},
+                        text = { Text(text = stringResource(R.string.changeIMG), fontSize = 12.sp)},
                         onClick = {
                             mDisplayMenu = !mDisplayMenu
                             val permission: String = Manifest.permission.READ_EXTERNAL_STORAGE
@@ -346,7 +357,20 @@ class MainActivity : ComponentActivity() {
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text(text = "Remove", fontSize = 12.sp, color = MaterialTheme.colorScheme.error)},
+                        text = { Text(text = stringResource(R.string.changeInfo), fontSize = 12.sp) },
+                        onClick = {
+                            mDisplayMenu = !mDisplayMenu
+                            val newAct = Intent(context, InputActivity::class.java)
+                            newAct.putExtra("name", item.name)
+                            newAct.putExtra("time", item.time)
+                            newAct.putExtra("channel", item.channel)
+                            newAct.putExtra("fio", item.fio)
+                            changeLauncher.launch(newAct)
+
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(R.string.remove), fontSize = 12.sp, color = MaterialTheme.colorScheme.error)},
                         onClick = {
                             mDisplayMenu = !mDisplayMenu
                             viewModel.removeItem(item)

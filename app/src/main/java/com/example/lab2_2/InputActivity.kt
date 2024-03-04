@@ -34,16 +34,24 @@ class InputActivity : ComponentActivity() {
     @Composable
     fun MakeInputPart() {
         var tvShow by remember {
-            mutableStateOf("")
+            mutableStateOf(
+                this.intent.getStringExtra("name") ?: ""
+            )
         }
         var showTime by remember{
-            mutableStateOf("")
+            mutableStateOf(
+                this.intent.getStringExtra("time") ?: ""
+            )
         }
         var tvChannel by remember {
-            mutableStateOf("")
+            mutableStateOf(
+                this.intent.getStringExtra("channel") ?: ""
+            )
         }
         var fio by remember {
-            mutableStateOf("")
+            mutableStateOf(
+                this.intent.getStringExtra("fio") ?: ""
+            )
         }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
