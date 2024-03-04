@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">lab2_2</string>
+    <string name="kr1st">Kr1stoffers ❄️ что-то типо Назмиев В.Д.</string>
+
+    <string name="rect">Прямоугольник</string>
+    <string name="circle">Круг</string>
+    <string name="kitty">Котик 😸</string>
+    <string name="image">Картинка</string>
+    <string name="surname">Фамилия</string>
+    <string name="save">Сохранить</string>
+    <string name="upload">Загрузить</string>
+    <string name="primative">Примитивы</string>
+    <string name="about">О нём</string>
+    <string name="title">Телепередачи</string>
+    <string name="addTV">Добавить</string>
+    <string name="drawing">Рисовашки 🥳</string>
+    <string name="resetTV">Сбросить изменения</string>
+    <string name="black">Пурпурный</string>
+    <string name="green">Зелёный</string>
+    <string name="red">Красный</string>
+    <string name="color">Цвет</string>
+    <string name="time">Время</string>
+    <string name="channel">Канал</string>
+    <string name="author">Автор</string>
+    <string name="TVtitle">Программа</string>
+    <string name="title_activity_drawing">DrawingActivity</string>
+</resources>

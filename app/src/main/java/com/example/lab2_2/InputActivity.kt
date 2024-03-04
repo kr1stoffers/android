@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.lab2_2.ui.theme.Lab2_2Theme
@@ -49,7 +50,7 @@ class InputActivity : ComponentActivity() {
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             TextField(
-                label = { Text("Программа") },
+                label = { Text(stringResource(R.string.TVtitle)) },
                 value = tvShow.toString(),
                 onValueChange = { newText ->
                     tvShow = newText
@@ -62,7 +63,7 @@ class InputActivity : ComponentActivity() {
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 TextField(
-                    label = { Text("Время показа") },
+                    label = { Text(stringResource(R.string.time)) },
                     value = showTime.toString(),
                     onValueChange = { newText ->
                         showTime = newText
@@ -71,7 +72,7 @@ class InputActivity : ComponentActivity() {
                     modifier = Modifier.weight(1f)
                 )
                 TextField(
-                    label = { Text("Канал") },
+                    label = { Text(stringResource(R.string.channel)) },
                     value = tvChannel.toString(),
                     onValueChange = { newText ->
                         tvChannel = newText
@@ -81,7 +82,7 @@ class InputActivity : ComponentActivity() {
                 )
             }
             TextField(
-                label = { Text("ФИО") },
+                label = { Text(stringResource(R.string.author)) },
                 value = fio.toString(),
                 onValueChange = { newText ->
                     fio = newText
@@ -105,7 +106,7 @@ class InputActivity : ComponentActivity() {
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Add")
+                Text(stringResource(R.string.addTV))
             }
         }
     }

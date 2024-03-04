@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -52,7 +53,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 //        this.deleteDatabase("TVs.db")
         val dbHelper = TVDbHelper(this)
-//        println(this.filesDir)
+        println(this.getFilesDir().getPath())
         if (savedInstanceState != null && savedInstanceState.containsKey("TVs")){
             val tempTVArray = savedInstanceState.getSerializable("TVs") as ArrayList<TV>
             viewModel.clearList()
@@ -125,10 +126,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         if (openDialog.value)
-            MakeAlertDialog(context = mContext, dialogTitle = "About", openDialog = openDialog)
+            MakeAlertDialog(context = mContext, dialogTitle = stringResource(R.string.kr1st), openDialog = openDialog)
         val drawerStateObj = rememberDrawerState(initialValue = DrawerValue.Closed)
         TopAppBar(
-            title = { Text("TV Shows") },
+            title = { Text(stringResource(R.string.title)) },
             actions = {
                 IconButton(onClick = { mDisplayMenu = !mDisplayMenu }) {
                     Icon(Icons.Default.MoreVert, null)
@@ -138,14 +139,14 @@ class MainActivity : ComponentActivity() {
                     onDismissRequest = { mDisplayMenu = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text(text = "About")},
+                        text = { Text(text = stringResource(R.string.about))},
                         onClick = {
                             mDisplayMenu = !mDisplayMenu
                             openDialog.value = true
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text(text = "Add TV") },
+                        text = { Text(text = stringResource(R.string.addTV)) },
                         onClick = {
                             val newAct = Intent(mContext, InputActivity::class.java)
                             startForResult.launch(newAct)
@@ -178,7 +179,7 @@ class MainActivity : ComponentActivity() {
                     Spacer(Modifier.height(12.dp))
                     NavigationDrawerItem(
                         icon = {Icon(Icons.Default.Star, contentDescription = null)},
-                        label = { Text("Drawing")},
+                        label = { Text(stringResource(R.string.drawing))},
                         selected = false,
                         onClick = {
                             scope.launch { drawerStateObj.close() }
@@ -189,7 +190,7 @@ class MainActivity : ComponentActivity() {
                     )
                     NavigationDrawerItem(
                         icon = {Icon(Icons.Default.Home, contentDescription = null)},
-                        label = { Text("Reset TV Show")},
+                        label = { Text(stringResource(R.string.resetTV))},
                         selected = false,
                         onClick = {
 //                            viewModel.
@@ -200,6 +201,7 @@ class MainActivity : ComponentActivity() {
                             }
                             dbHelper!!.del()
                             dbHelper!!.addArrayToDB(temp)
+                            drawerStateObj
                         },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -354,7 +356,7 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                     Text(
-                        text = "Show time:",
+                        text = "${stringResource(R.string.time)}:",
                         fontSize = 10.sp,
                         fontStyle = FontStyle.Italic
                     )
@@ -365,7 +367,7 @@ class MainActivity : ComponentActivity() {
                         fontStyle = FontStyle.Italic
                     )
                     Text(
-                        text = "Channel:",
+                        text = "${stringResource(R.string.channel)}:",
                         fontSize = 10.sp,
                         fontStyle = FontStyle.Italic
                     )
@@ -376,7 +378,7 @@ class MainActivity : ComponentActivity() {
                         fontStyle = FontStyle.Italic
                     )
                     Text(
-                        text = "Author:",
+                        text = "${stringResource(R.string.author)}:",
                         fontSize = 10.sp,
                         fontStyle = FontStyle.Italic
                     )
